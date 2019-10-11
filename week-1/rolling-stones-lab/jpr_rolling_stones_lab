@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 11 09:09:14 2019
+
+@author: JacquesPierre
+"""
+
+import csv
+import matplotlib.pyplot as plt
+from collections import Counter
+
+with open('data.csv') as f:
+    reader = csv.DictReader(f)
+    roll_dict = [{k:v for k,v in row.items()} for row in reader]
+
+def find_by_name(album_name):
+    for album in roll_dict:
+        if album['album'] == album_name:
+            return album
+    return 'None'
+
+def find_by_rank(rank):
+    rank = str(rank)
+    for album in roll_dict:
+        if album['number'] == rank:
+            return album
+    return 'None'
+
+def find_by_year(year):    
+    release = [album for album in roll_dict if album['year'] == str(year)]
+    return release  
+
+def find_by_years(start_year, end_year):
+    start_year = int(start_year)
+    end_year = int(end_year)
+    time_period = list(range(start_year, end_year + 1))
+    release =[album for album in roll_dict if int(album['year']) in time_period]
+    return release
+
+def find_by_ranks(start_rank, end_rank):
+    start_rank = int(start_rank)
+    end_rank = int(end_rank)
+    rank_ = list(range(start_rank, end_rank + 1))    
+    release = [album for album in roll_dict if int(album['number']) in rank_]
+    return release
+
+def all_titles():
+    titles = [album['album'] for album in roll_dict]
+    return titles
+
+def all_artists():
+    artists = [album['artist'] for album in roll_dict]
+    return artists
+
+def most_albums():
+    counter_dict = Counter(all_artists())
+    n = len(list(counter_dict.keys()))
+    lst_keys = list(counter_dict.keys())
+    lst_values = list(counter_dict.values())
+    artists_with_most_albums = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
+    return artists_with_most_albums
+
+def most_pop_word():
+    parse_titles = [title.lower() for title in all_titles()]
+    lst_words = []
+    for title in parse_titles:
+        lst_words += title.split()
+
+    counter_dict = Counter(lst_words)
+    n = len(list(counter_dict.keys()))
+    lst_keys = list(counter_dict.keys())
+    lst_values = list(counter_dict.values())
+    
+    most_popular_word = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
+    return most_popular_word
+
+def histogram_by_decade():
+    x = [int(album['year']) for album in roll_dict]
+    return plt.hist(x, range=(1950, 2020),bins=7)
+
+
+genres = [album['genre'] for album in roll_dict]
+parsed_genres = []
+for genre in genres:
+    parsed_genres.append(genre.split(',')[0])
+unique_genres = set(parsed_genres)
+plt.hist(parsed_genres, unique_genres, bins = len(unique_genres))
