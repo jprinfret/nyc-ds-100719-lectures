@@ -7,6 +7,7 @@ Created on Fri Oct 11 09:09:14 2019
 """
 
 import csv
+import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 
@@ -46,6 +47,7 @@ def find_by_ranks(start_rank, end_rank):
     return release
 
 def all_titles():
+    
     titles = [album['album'] for album in roll_dict]
     return titles
 
@@ -76,13 +78,13 @@ def most_pop_word():
     return most_popular_word
 
 def histogram_by_decade():
-    x = [int(album['year']) for album in roll_dict]
-    return plt.hist(x, range=(1950, 2020),bins=7)
+    decades = [int(album['year']) for album in roll_dict]
+    return plt.hist(decades, range=(1950, 2020),bins=7)
 
 
-genres = [album['genre'] for album in roll_dict]
-parsed_genres = []
-for genre in genres:
-    parsed_genres.append(genre.split(',')[0])
-unique_genres = set(parsed_genres)
-plt.hist(parsed_genres, unique_genres, bins = len(unique_genres))
+def graph_by_genre():
+    genres = [album["genre"] for album in roll_dict]
+    parsed_genres = []
+    for genre in genres:
+        parsed_genres.append(genre.split(',')[0])
+    pd.Series(parsed_genres).value_counts().plot('bar')
