@@ -6,84 +6,129 @@ Created on Fri Oct 11 09:09:14 2019
 @author: JacquesPierre
 """
 
+#-----[imports]------#
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
+# -------------------#
 
+#------[create album dictionary]------#
 with open('data.csv') as f:
     reader = csv.DictReader(f)
-    roll_dict = [{k:v for k,v in row.items()} for row in reader]
+    album_dict = list(reader)
+#-------------------------------------#
 
-def find_by_name(album_name):
-    for album in roll_dict:
+#-------[create song dictionary]-------#
+text_file = open('top-500-songs.txt', 'r')
+lines = text_file.readlines()
+songs = [lines[i].split('\t') for i in range(len(lines))] # removed '\t'
+song_year = [songs[i][-1][:4] for i in range(len(songs))] # removed '\n'
+        
+        
+song_dict = [{'rank': song[0], 
+              'name': song[1], 
+              'artist': song[2]} for song in songs]
+
+for i in range(len(songs)):
+    song_dict[i]['year'] = song_year[i]
+#--------------------------------------#
+
+#------[functions]-----#
+def find_album_by_name(album_name):
+    for album in album_dict:
         if album['album'] == album_name:
             return album
     return 'None'
 
-def find_by_rank(rank):
-    rank = str(rank)
-    for album in roll_dict:
-        if album['number'] == rank:
-            return album
+def find_song_by_name(song_name):
+    for song in song_dict:
+        if song['name'] == song_name:
+            return song
     return 'None'
 
-def find_by_year(year):    
-    release = [album for album in roll_dict if album['year'] == str(year)]
+def find_by_rank(ranking, _dict):
+    ranking = str(ranking)
+    for rank in _dict:
+        if rank['number'] == ranking:
+            return rank
+    return 'None'
+
+def find_by_year(year, _dict):    
+    release = [item for item in _dict if item['year'] == str(year)]
     return release  
 
-def find_by_years(start_year, end_year):
+def find_by_years(start_year, end_year, _dict):
     start_year = int(start_year)
     end_year = int(end_year)
     time_period = list(range(start_year, end_year + 1))
-    release =[album for album in roll_dict if int(album['year']) in time_period]
+    release =[item for item in _dict if int(item['year']) in time_period]
     return release
 
-def find_by_ranks(start_rank, end_rank):
+def find_by_ranks(start_rank, end_rank, _dict):
     start_rank = int(start_rank)
     end_rank = int(end_rank)
-    rank_ = list(range(start_rank, end_rank + 1))    
-    release = [album for album in roll_dict if int(album['number']) in rank_]
+    top_rankings = list(range(start_rank, end_rank + 1))    
+    release = [item for item in _dict if int(item['number']) in top_rankings]
     return release
 
-def all_titles():
-    
-    titles = [album['album'] for album in roll_dict]
-    return titles
+def all_album_titles():
+    album_titles = [album['album'].title() for album in album_dict]
+    return album_titles
 
-def all_artists():
-    artists = [album['artist'] for album in roll_dict]
+def all_song_titles():
+    song_titles = [song['name'].title() for song in song_dict]
+    return song_titles
+
+def all_artists(_dict):
+    artists = [item['artist'] for item in _dict]
     return artists
 
 def most_albums():
-    counter_dict = Counter(all_artists())
+    counter_dict = Counter(all_artists(album_dict))
     n = len(list(counter_dict.keys()))
     lst_keys = list(counter_dict.keys())
     lst_values = list(counter_dict.values())
     artists_with_most_albums = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
     return artists_with_most_albums
 
-def most_pop_word():
-    parse_titles = [title.lower() for title in all_titles()]
-    lst_words = []
-    for title in parse_titles:
-        lst_words += title.split()
+def most_singles():
+    counter_dict = Counter(all_artists(song_dict))
+    n = len(list(counter_dict.keys()))
+    lst_keys = list(counter_dict.keys())
+    lst_values = list(counter_dict.values())
+    artists_with_most_singles = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
+    return artists_with_most_singles
 
+def most_pop_word_albums():
+    lst_words = []
+    for title in all_album_titles:
+        lst_words += title.split()
     counter_dict = Counter(lst_words)
     n = len(list(counter_dict.keys()))
     lst_keys = list(counter_dict.keys())
     lst_values = list(counter_dict.values())
-    
-    most_popular_word = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
-    return most_popular_word
+    most_popular_word_album = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
+    return most_popular_word_album
 
-def histogram_by_decade():
-    decades = [int(album['year']) for album in roll_dict]
+def most_pop_word_songs():
+    lst_words = []
+    for title in all_song_titles:
+        lst_words += title.split()
+    counter_dict = Counter(lst_words)
+    n = len(list(counter_dict.keys()))
+    lst_keys = list(counter_dict.keys())
+    lst_values = list(counter_dict.values())
+    most_popular_word_song = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)]
+    return most_popular_word_song
+
+def histogram_by_decade(_dict):
+    decades = [int(item['year']) for item in _dict]
     return plt.hist(decades, range=(1950, 2020),bins=7)
 
 
 def graph_by_genre():
-    genres = [album["genre"] for album in roll_dict]
+    genres = [album["genre"] for album in album_dict]
     parsed_genres = []
     for genre in genres:
         parsed_genres.append(genre.split(',')[0])
