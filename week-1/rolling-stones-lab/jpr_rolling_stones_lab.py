@@ -179,17 +179,47 @@ def albumsWithTopSongs():
                 albums_with_tracks_top500.append(album['album'])
     return set(albums_with_tracks_top500)
 
-def top10AlbumsByTopSongs_hist():
-    albums_with_tracks_top500 = []
-    for album in json_data:
-        for track in album['tracks']:
-            if track in all_song_titles():
-                albums_with_tracks_top500.append(album['album'])
-    counter_dict = Counter(albums_with_tracks_top500)
-    print(counter_dict)
-    #top10_albums = []
-    #counter = 0
-    #while counter < 10:
-     #   top10_albums.append(lst_keys[counter])
-      #  counter += 1
-    #return top10_albums
+def songsThatAreOnTopAlbums():
+    songs_on_top_albums = [album['tracks'] for album in json_data if album['album'] in all_album_titles()]
+    return songs_on_top_albums
+
+# =============================================================================
+# def top10AlbumsByTopSongs_hist():
+# # -- start:
+# # -- create a Counter with keys = album name
+# #    and values = # of songs in top 500
+#     albums = []
+#     for album in json_data:
+#         for track in album['tracks']:
+#             if track in all_song_titles():
+#                 albums.append(album['album'])
+#     counter_dict = Counter(albums)
+#     n = len(list(counter_dict.keys()))
+#     lst_keys = list(counter_dict.keys())
+#     lst_values = list(counter_dict.values())
+# # -- end
+#     
+# # -- start:
+# # -- create a list of the top 10 Counter values    
+#     top10_largest_values = []
+#     for i in range(10):
+#         max1 = 0
+#         for j in range(len(lst_values)):
+#             if lst_values[j] > max1:
+#                 max1 = lst_values[j]
+#         lst_values.remove(max1)
+#         top10_largest_values.append(max1)
+#         unique_top_10 = set(top10_largest_values)
+# # -- end:
+#     
+# # the 216 - 224 is very broken - error: "list index out of range"
+# -- start:
+# # -- create a list of albums whose Counter value is in the top 10
+#     top10_albums = []
+#     for value in unique_top_10:
+#         for x in range(n):
+#             if int(lst_values[x]) == value:
+#                 top10_albums.append(lst_keys[x])
+#     return top10_albums
+# # -- end
+# =============================================================================
