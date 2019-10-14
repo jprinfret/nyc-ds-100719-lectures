@@ -8,6 +8,7 @@ Created on Fri Oct 11 09:09:14 2019
 
 #-----[imports]------#
 import csv
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -34,6 +35,18 @@ for i in range(len(songs)):
     song_dict[i]['year'] = song_year[i]
 #--------------------------------------#
 
+#------[json]------#
+file = open('track_data.json', 'r')
+json_data = json.load(file)
+#------------------#
+
+#------[jpr - not asked for but test]------#
+def find_by_artist(artist_name, _dict):
+    lst = [artist for artist in _dict if artist['artist'] == artist_name]
+    print(lst)
+    print("# of albums:", len(lst))
+#------------------------------------------#
+
 #------[functions]-----#
 def find_album_by_name(album_name):
     for album in album_dict:
@@ -41,18 +54,40 @@ def find_album_by_name(album_name):
             return album
     return 'None'
 
+def find_album_by_rank(ranking):
+    ranking = str(ranking)
+    for rank in album_dict:
+        if rank['number'] == ranking:
+            return rank
+    return 'None'
+
+
+def find_album_by_ranks(start_rank, end_rank):
+    start_rank = int(start_rank)
+    end_rank = int(end_rank)
+    top_rankings = list(range(start_rank, end_rank + 1))    
+    release = [album for album in album_dict if int(album['number']) in top_rankings]
+    return release
+
 def find_song_by_name(song_name):
     for song in song_dict:
         if song['name'] == song_name:
             return song
     return 'None'
 
-def find_by_rank(ranking, _dict):
+def find_song_by_rank(ranking):
     ranking = str(ranking)
-    for rank in _dict:
-        if rank['number'] == ranking:
+    for rank in song_dict:
+        if rank['rank'] == ranking:
             return rank
     return 'None'
+
+def find_song_by_ranks(start_rank, end_rank):
+    start_rank = int(start_rank)
+    end_rank = int(end_rank)
+    top_rankings = list(range(start_rank, end_rank + 1))    
+    release = [song for song in song_dict if int(song['rank']) in top_rankings]
+    return release
 
 def find_by_year(year, _dict):    
     release = [item for item in _dict if item['year'] == str(year)]
@@ -63,13 +98,6 @@ def find_by_years(start_year, end_year, _dict):
     end_year = int(end_year)
     time_period = list(range(start_year, end_year + 1))
     release =[item for item in _dict if int(item['year']) in time_period]
-    return release
-
-def find_by_ranks(start_rank, end_rank, _dict):
-    start_rank = int(start_rank)
-    end_rank = int(end_rank)
-    top_rankings = list(range(start_rank, end_rank + 1))    
-    release = [item for item in _dict if int(item['number']) in top_rankings]
     return release
 
 def all_album_titles():
@@ -102,7 +130,7 @@ def most_singles():
 
 def most_pop_word_albums():
     lst_words = []
-    for title in all_album_titles:
+    for title in all_album_titles():
         lst_words += title.split()
     counter_dict = Counter(lst_words)
     n = len(list(counter_dict.keys()))
@@ -113,7 +141,7 @@ def most_pop_word_albums():
 
 def most_pop_word_songs():
     lst_words = []
-    for title in all_song_titles:
+    for title in all_song_titles():
         lst_words += title.split()
     counter_dict = Counter(lst_words)
     n = len(list(counter_dict.keys()))
@@ -133,3 +161,48 @@ def graph_by_genre():
     for genre in genres:
         parsed_genres.append(genre.split(',')[0])
     pd.Series(parsed_genres).value_counts().plot('bar')
+    
+def albumWithMostTopSongs():
+    albums_with_tracks_top500 = []
+    for album in json_data:
+        for track in album['tracks']:
+            if track in all_song_titles():
+                albums_with_tracks_top500.append(album['album'])
+    counter_dict = Counter(albums_with_tracks_top500)
+    n = len(list(counter_dict.keys()))
+    lst_keys = list(counter_dict.keys())
+    lst_values = list(counter_dict.values())
+    album_with_most_top_songs = [lst_keys[i] for i in range(n) if int(lst_values[i]) == max(lst_values)][0]
+    lst_artist = [album['artist'] for album in album_dict if album_with_most_top_songs == album['album']]
+    artist = lst_artist[0]         
+    print("Album:", album_with_most_top_songs)
+    print("Artist:", artist)
+    print("No. Top Tracks:", counter_dict[album_with_most_top_songs])
+    
+def albumsWithTopSongs():
+    albums_with_tracks_top500 = []
+    for album in json_data:
+        for track in album['tracks']:
+            if track in all_song_titles():
+                albums_with_tracks_top500.append(album['album'])
+    return set(albums_with_tracks_top500)
+
+
+
+
+
+
+
+def top10AlbumsByTopSongs_hist():
+    albums_with_tracks_top500 = []
+    for album in json_data:
+        for track in album['tracks']:
+            if track in all_song_titles():
+                albums_with_tracks_top500.append(album['album'])
+    counter_dict = list(Counter(albums_with_tracks_top500))
+    #top10_albums = []
+    #counter = 0
+    #while counter < 10:
+     #   top10_albums.append(lst_keys[counter])
+      #  counter += 1
+    #return top10_albums
