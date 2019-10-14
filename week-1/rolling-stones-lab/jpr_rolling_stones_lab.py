@@ -1,12 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct 11 09:09:14 2019
-
-@author: JacquesPierre
-"""
-
-#-----[imports]------#
+#------[import]------#
 import csv
 import json
 import pandas as pd
@@ -187,19 +179,14 @@ def albumsWithTopSongs():
                 albums_with_tracks_top500.append(album['album'])
     return set(albums_with_tracks_top500)
 
-
-
-
-
-
-
 def top10AlbumsByTopSongs_hist():
     albums_with_tracks_top500 = []
     for album in json_data:
         for track in album['tracks']:
             if track in all_song_titles():
                 albums_with_tracks_top500.append(album['album'])
-    counter_dict = list(Counter(albums_with_tracks_top500))
+    counter_dict = Counter(albums_with_tracks_top500)
+    print(counter_dict)
     #top10_albums = []
     #counter = 0
     #while counter < 10:
