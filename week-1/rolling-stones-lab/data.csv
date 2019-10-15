@@ -1,4 +1,4 @@
-onumber,year,album,artist,genre,subgenre
+number,year,album,artist,genre,subgenre
 1,1967,Sgt. Pepper's Lonely Hearts Club Band,The Beatles,Rock,"Rock & Roll, Psychedelic Rock"
 2,1966,Pet Sounds,The Beach Boys,Rock,"Pop Rock, Psychedelic Rock"
 3,1966,Revolver,The Beatles,Rock,"Psychedelic Rock, Pop Rock"
